@@ -1,97 +1,59 @@
-import { useRef, useState } from "react"
+import { useRef, useState } from "react";
 
-export const OtpComponent = () =>{
+export const OtpComponent = ({ number }) => {
+  const ref = useRef(Array(number).fill(0));
 
+  return (
+    <>
+      {Array(number)
+        .fill(1)
+        .map((x, index) => (
+          <SubOtpBox
+            key={index}
+            reference={(e) => (ref.current[index] = e)}
+            onDone={() => {
+              if (index >= number) {
+                return;
+              }
+              ref.current[index + 1].focus();
+            }}
+            onEmpty={() => {
+              if (index - 1 == 0) {
+                return;
+              }
+              ref.current[index - 1].focus();
+            }}
+          />
+        ))}
+    </>
+  );
+};
 
-    const ref1= useRef();
-    const ref2= useRef();
-    const ref3= useRef();
-    const ref4= useRef();
-    const ref5= useRef();
-    const ref6= useRef();
-
-
-    return(<>
-        <SubOtpBox 
-        reference={ref1}
-        onDone={() =>{
-            ref2.current.focus()
+function SubOtpBox({ reference, onDone, onEmpty }) {
+  const [value, setValue] = useState("");
+  const allowedInput = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  return (
+    <>
+      <input
+        value={value}
+        maxLength={1}
+        ref={reference}
+        onChange={(e) => {
+          let val = e.target.value;
+          if (allowedInput.find((x) => x == val)) {
+            setValue(e.target.value);
+            onDone();
+          }
         }}
-        onClear={() =>{
-            ref1.current.focus()
+        onKeyUp={(e) => {
+          if (e.key == "Backspace") {
+            setValue("");
+            onEmpty();
+          }
         }}
-        onEmpty={() =>{}}/>
-        <SubOtpBox 
-        reference={ref2} 
-        onDone={() =>{
-            ref3.current.focus()
-        }}
-        onClear={() =>{
-            ref2.current.focus()
-        }}
-        onEmpty={() =>{
-            ref1.current.focus()
-       }}/>
-        <SubOtpBox 
-        reference={ref3} 
-        onDone={() =>{
-            ref4.current.focus()
-        }}
-        onClear={() =>{
-            ref3.current.focus()
-        }}
-        onEmpty={() =>{
-            ref2.current.focus()
-       }}/>
-        <SubOtpBox 
-        reference={ref4} 
-        onDone={() =>{
-            ref5.current.focus()
-        }}
-        onClear={() =>{
-             ref4.current.focus()
-        }}
-        onEmpty={() =>{
-            ref3.current.focus()
-       }}/>
-        <SubOtpBox 
-        reference={ref5} 
-        onDone={() =>{
-            ref6.current.focus()
-        }}
-        onClear={() =>{
-            ref5.current.focus()
-        }}
-        onEmpty={() =>{
-            ref4.current.focus()
-       }}/>
-        <SubOtpBox 
-        reference={ref6} 
-        onDone={() =>{}} 
-        onClear={() =>{
-             ref6.current.focus()
-        }}
-        onEmpty={() =>{
-            ref5.current.focus()
-       }}/>
-    </>)
-}
-
-function SubOtpBox( {reference ,onDone,onClear,onEmpty }){
-    const [value ,setValue] = useState("")
-    return(<>
-        <input value={value} maxLength={1} ref={reference} onChange={(e) =>{
-            
-            if(e.target.value === '') 
-            {
-                setValue("")
-                 onEmpty() 
-            }
-            else
-            {
-                setValue(e.target.value) 
-                onDone()
-            }
-        }} type="text" className="w-[40px] h-[50px] rounded-2xl bg-gray-600 outline-none m-1 px-4 text-white" />
-    </>)
+        type="text"
+        className="w-[40px] h-[50px] rounded-2xl bg-gray-600 outline-none m-1 px-4 text-white"
+      />
+    </>
+  );
 }
